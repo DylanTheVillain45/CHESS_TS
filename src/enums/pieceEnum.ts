@@ -1,8 +1,8 @@
 export enum Type {
-  Pawn,
-  Knight,
-  Bishop,
-  Rook,
-  Queen,
-  King,
+  Pawn = "PAWN",
+  Knight = "KNIGHT",
+  Bishop = "BISHOP",
+  Rook = "ROOK",
+  Queen = "QUEEN",
+  King = "KING",
 }
