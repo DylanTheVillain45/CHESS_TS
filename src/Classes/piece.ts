@@ -4,24 +4,23 @@ import { Move } from "./move";
 import type { Tile } from "./tile";
 
 export class Piece {
-    tile: Tile;
-    x: number;
-    y: number
-    type: Type;
-    color: Color;
+  tile: Tile;
+  x: number;
+  y: number;
+  type: Type;
+  color: Color;
 
+  constructor(tile: Tile, y: number, x: number, type: Type, color: Color) {
+    this.tile = tile;
+    this.x = x;
+    this.y = y;
+    this.type = type;
+    this.color = color;
+  }
 
-    constructor(tile: Tile, x: number, y: number, type: Type, color: Color) {
-        this.tile = tile;
-        this.x = x;
-        this.y = y;
-        this.type = type;
-        this.color = color;
-    }
+  GetAvailableMoves(board: Tile[][]): Move[] {
+    const move: Move[] = [];
 
-    GetAvailableMoves(board: Tile[][]): Move[] {
-        const move: Move[] = []
-
-        return move;
-    }
+    return move;
+  }
 }

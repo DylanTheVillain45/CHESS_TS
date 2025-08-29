@@ -4,9 +4,14 @@ export class Tile {
   x: number;
   y: number;
   el: HTMLDivElement;
-  piece: Piece | null;
+  piece?: Piece;
 
-  constructor(row: number, col: number, boardEl: HTMLDivElement) {
+  constructor(
+    col: number,
+    row: number,
+    boardEl: HTMLDivElement,
+    private HandleClick: (tile: Tile) => void
+  ) {
     this.x = row;
     this.y = col;
     this.el = document.createElement("div");
@@ -15,8 +20,11 @@ export class Tile {
       "tile",
       `${(row + col) % 2 == 0 ? "black" : "white"}`
     );
+    // this.el.textContent = `${this.x}, ${this.y}`;
     boardEl.appendChild(this.el);
-    this.piece = null;
+    this.el.addEventListener("click", () => {
+      this.HandleClick(this);
+    });
   }
 
   AddPiece(piece: Piece) {
@@ -25,6 +33,8 @@ export class Tile {
     this.el.classList.remove(
       ...Array.from(this.el.classList).filter((c) => c.includes("-"))
     );
-    this.el.classList.add(`${this.piece.color.toLowerCase()}-${this.piece.type.toLowerCase()}`);
+    this.el.classList.add(
+      `${this.piece.color.toLowerCase()}-${this.piece.type.toLowerCase()}`
+    );
   }
 }

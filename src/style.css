@@ -8,7 +8,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  --tile-size: 50px;
+  --tile-size: 80px;
 }
 
 #board {
@@ -39,6 +39,10 @@
 h1 {
   text-align: center;
   margin: 50px 0 50px 0;
+}
+
+.highlighted {
+  background-color: red;
 }
 
 /* Black Pieces */

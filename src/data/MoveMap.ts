@@ -1,6 +1,7 @@
 import { Type } from "../enums/pieceEnum";
 
-export const MoveMap: Partial<Record<Type, [number, number, boolean][]>> = {
+export const MoveMap: Record<Type, [number, number, boolean][]> = {
+  [Type.Pawn]: [],
   [Type.Knight]: [
     [1, 2, false],
     [2, 1, false],
@@ -27,12 +28,10 @@ export const MoveMap: Partial<Record<Type, [number, number, boolean][]>> = {
   ],
 
   [Type.Queen]: [
-    // Rook moves
     [1, 0, true],
     [-1, 0, true],
     [0, 1, true],
     [0, -1, true],
-    // Bishop moves
     [1, 1, true],
     [1, -1, true],
     [-1, 1, true],
