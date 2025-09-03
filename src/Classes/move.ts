@@ -9,13 +9,17 @@ export class Move {
   endX: number;
 
   capturedPiece?: Piece;
-  promotionPiece?: PublicKeyCredentialType;
+  promotionType?: Type;
 
   isCapture: boolean;
   isCastle: boolean;
   isShortCastle: boolean;
   isEnpassant: boolean;
   isPromotion: boolean;
+
+  isCheck: boolean = false;
+  isCheckMate: boolean = false;
+  isStaleMate: boolean = false;
 
   constructor(
     piece: Piece,
@@ -37,14 +41,13 @@ export class Move {
     this.startX = startX;
     this.endY = endY;
     this.endX = endX;
-    
+
     this.capturedPiece = opts?.capturedPiece;
     this.isCapture = opts?.capturedPiece != undefined;
     this.isCastle = opts?.isCastle ?? false;
     this.isShortCastle = opts?.isShortCastle ?? false;
     this.isEnpassant = opts?.isEnpassant ?? false;
     this.isPromotion = opts?.isPromotion ?? false;
-
-
+    this.promotionType = opts?.promotionType;
   }
 }

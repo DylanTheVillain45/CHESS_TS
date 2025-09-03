@@ -29,12 +29,15 @@ export class Tile {
 
   AddPiece(piece: Piece) {
     this.piece = piece;
-
-    this.el.classList.remove(
-      ...Array.from(this.el.classList).filter((c) => c.includes("-"))
-    );
     this.el.classList.add(
       `${this.piece.color.toLowerCase()}-${this.piece.type.toLowerCase()}`
+    );
+  }
+
+  RemovePiece() {
+    this.piece = undefined;
+    this.el.classList.remove(
+      ...Array.from(this.el.classList).filter((c) => c.includes("-"))
     );
   }
 }

@@ -8,6 +8,8 @@ import { DebugHelp } from "../Debug/DebugHelp";
 
 export class Board {
   board: Tile[][];
+  whiteKing!: Piece;
+  blackKing!: Piece;
 
   constructor(boardEl: HTMLDivElement, private HandleClick: (tile: Tile) => void) {
     this.board = this.CreateBoard(boardEl);
@@ -33,6 +35,12 @@ export class Board {
           }
 
           let piece = new Piece(tile, i, j, type, color);
+
+          if (piece.type == Type.King) {
+            if (piece.color == Color.White) this.whiteKing = piece;
+            else this.blackKing = piece;
+          }
+          
           tile.AddPiece(piece);
         }
         row.push(tile);
@@ -66,6 +74,12 @@ export class Board {
       moves = MoveHelper.GetPawnMoves(this, piece);
     } else {
       moves = MoveHelper.GetNonPawnMoves(this, piece);
+
+      if (piece.type == Type.King) {
+        let castleMoves: Move[] = MoveHelper.GetCastleMoves(this, piece);
+
+        moves = [...moves, ...castleMoves]
+      }
     }
 
 

@@ -41,6 +41,10 @@ h1 {
   margin: 50px 0 50px 0;
 }
 
+.current {
+  background-color: rgb(65, 13, 13);
+}
+
 .highlighted {
   background-color: red;
 }

@@ -18,9 +18,16 @@ export class Piece {
     this.color = color;
   }
 
-  GetAvailableMoves(board: Tile[][]): Move[] {
-    const move: Move[] = [];
+  Move(tile: Tile, y: number, x: number) {
+    this.tile = tile;
+    this.y = y;
+    this.x = x;
+  }
 
-    return move;
+  Promote(type: Type) {
+    if (this.type == Type.Pawn) {
+      this.type = type;
+      this.tile.AddPiece(this)
+    }
   }
 }
