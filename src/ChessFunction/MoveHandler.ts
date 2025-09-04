@@ -5,7 +5,6 @@ import { Type } from "../enums/pieceEnum";
 
 export class MoveHandler {
   currentTile: Tile | null;
-  currentMove: Move | null;
   moveList!: Move[];
   turn: Color;
   board!: Tile[][];
@@ -14,10 +13,9 @@ export class MoveHandler {
   constructor(
     color: Color,
     private MakeMove: (move: Move) => void,
-    private OpenModal: (callback: (type: Type) => void) => void
+    private OpenModal: (callback: (move: Move) => void, move: Move) => void
   ) {
     this.currentTile = null;
-    this.currentMove = null;
     this.turn = color;
     this.highlightedTiles = [];
     this.MakeMove = MakeMove;
@@ -79,9 +77,8 @@ export class MoveHandler {
           tile.y
         );
         if (move) {
-          this.currentMove = move;
           if (move.isPromotion) {
-            this.OpenModal(this.HandlePromotion);
+            return this.OpenModal(this.HandlePromotion.bind(this), move);
           }
 
           this.UnHighlightCurrent([this.currentTile.x, this.currentTile.y]);
@@ -90,23 +87,19 @@ export class MoveHandler {
 
         this.UnHighlightCurrent([this.currentTile.x, this.currentTile.y]);
         this.currentTile = null;
-        this.currentMove = null;
       }
     }
   }
 
-  HandlePromotion(type: Type) {
-    if (!this.currentMove || !this.currentTile) {
-      throw new Error("MOVE / TILE NOT INITIALIZED");
+  HandlePromotion(move: Move) {
+    console.log(this.currentTile)
+    if (this.currentTile == null) {
+      throw new Error("TILE NOT INITIALIZED");
     }
-
-    this.currentMove.promotionType = type;
-
     
     this.UnHighlightCurrent([this.currentTile.x, this.currentTile.y]);
-    this.MakeMove(this.currentMove);
+    this.MakeMove(move);
     this.currentTile = null;
-    this.currentMove = null;
   }
 
   GetMoveFromCords(

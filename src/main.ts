@@ -7,7 +7,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <div id="board">
       
     </div>
-    <div id="promotionModal" style="display: block; position: absolute; top: 50%; left: 50%; 
+    <div id="promotionModal" style="display: none; position: absolute; top: 50%; left: 50%; 
       transform: translate(-50%, -50%); background: white; padding: 10px; border: 2px solid black;">
       <button data-piece="queen">Queen</button>
       <button data-piece="rook">Rook</button>

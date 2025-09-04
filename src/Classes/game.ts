@@ -45,7 +45,7 @@ export class Game {
     this.moveHandler.SetMoveList(moves, this.color);
   }
 
-  OpenModal(callback: (type: Type) => void) {
+  OpenModal(callback: (move: Move) => void, move: Move) {
     this.promotionalModal.style.display = "block";
 
     const buttons = this.promotionalModal.querySelectorAll("button");
@@ -69,7 +69,8 @@ export class Game {
         }
 
         this.promotionalModal.style.display = "none";
-        callback(type);
+        move.promotionType = type;
+        callback(move);
       };
     });
   }
