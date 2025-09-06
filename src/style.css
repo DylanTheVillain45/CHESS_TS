@@ -11,6 +11,18 @@
   --tile-size: 80px;
 }
 
+@media (max-width: 768px) {
+  :root {
+    --tile-size: 60px; /* tablets */
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --tile-size: 45px; /* phones */
+  }
+}
+
 #board {
   width: calc(var(--tile-size) * 8);
   height: calc(var(--tile-size) * 8);
@@ -48,6 +60,100 @@ h1 {
 .highlighted {
   background-color: red;
 }
+
+#board {
+  /* transition: transform 0.3s ease; */
+}
+
+#board.rotated {
+  transform: rotate(180deg);
+}
+
+#board.rotated .tile {
+  transform: rotate(180deg)
+}
+
+#board .tile {
+  transform: rotate(0deg)
+}
+
+/* General reset for buttons and selects */
+#controls button,
+#controls select,
+#restartBtn {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Button hover effect */
+#controls button:hover,
+#restartBtn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Restart button special styling */
+#restartBtn {
+  color: #e74c3c;
+  font-weight: bold;
+}
+#restartBtn:hover {
+  background: rgba(231, 76, 60, 0.1);
+}
+
+/* Depth selector sleek style */
+#depthSelect {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+#depthSelect:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Promotion modal styling */
+#promotionModal {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translate(-50%, -50%) scale(0.95);
+  opacity: 0;
+  transition: all 0.25s ease-in-out;
+}
+
+/* When modal is visible */
+#promotionModal.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Promotion buttons */
+#promotionModal button {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  margin: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+#promotionModal button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
 
 /* Black Pieces */
 .black-pawn {

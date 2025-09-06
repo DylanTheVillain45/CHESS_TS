@@ -8,35 +8,146 @@ import { MoveHandler } from "../ChessFunction/MoveHandler";
 import { MoveExecuter } from "../ChessFunction/MoveExecuter";
 import { MoveFilter } from "../ChessFunction/MoveFilter";
 import { CheckChecker } from "../ChessFunction/CheckChecker";
+import { Evaluation } from "../AiFunction/Evaluation";
+import { Agent } from "../AiFunction/Agent";
+import { DebugHelp } from "../Debug/DebugHelp";
 
 export class Game {
   board!: Board;
   color!: Color;
   currentMoves!: Move[];
+  moveLog: [Move, Move | null][] = [];
   moveHandler!: MoveHandler;
   moveExecuter!: MoveExecuter;
   moveFilter!: MoveFilter;
-  promotionalModal!: HTMLDivElement;
 
-  constructor(boardEl: HTMLDivElement, promotionModal: HTMLDivElement) {
-    this.SetUpBoard(boardEl, promotionModal);
+  boardElement: HTMLDivElement;
+  promotionalModal: HTMLDivElement;
+  restartButton: HTMLElement;
+  undoMove: HTMLElement;
+  reverseBoard: HTMLElement;
+  depthSelector: HTMLSelectElement;
+
+  Agent!: Agent;
+  isAiMove: boolean = false;
+  aiDepth: number = 2;
+
+  constructor(
+    boardElement: HTMLDivElement,
+    promotionModal: HTMLDivElement,
+    restartButton: HTMLElement,
+    undoMove: HTMLElement,
+    reverseBoard: HTMLElement,
+    depthSelector: HTMLSelectElement
+  ) {
+    this.boardElement = boardElement;
+    this.promotionalModal = promotionModal;
+    this.restartButton = restartButton;
+    this.undoMove = undoMove;
+    this.reverseBoard = reverseBoard;
+    this.depthSelector = depthSelector;
+    this.SetUpBoard();
+    this.SetUpButtons();
+  }
+
+  SetUpButtons() {
+    this.restartButton.onclick = () => this.SetUpBoard();
+    this.undoMove.onclick = () => {
+      this.UnMakeMove(this.GetLastMove());
+      this.GetSetMoves(this.color);
+    };
+    this.reverseBoard.onclick = () => {
+      this.SetUpBoard();
+      this.boardElement.classList.toggle("rotated");
+      if (this.boardElement.classList.contains("rotated")) {
+        this.isAiMove = true;
+        this.HandleAiMove();
+      }
+    };
+    this.depthSelector.onchange = () => {
+      this.aiDepth = Number.parseInt(this.depthSelector.value);
+    };
+  }
+
+  GetLastMove(): Move {
+    let move1 = this.moveLog[this.moveLog.length - 1][0];
+    let move2 = this.moveLog[this.moveLog.length - 1][1];
+
+    if (move2 == null && move1) {
+      return move1;
+    } else if (move2) {
+      return move2;
+    } else {
+      throw new Error("move null");
+    }
+  }
+
+  HandlePlayerMove(move: Move) {
+    this.MakeMove(move);
+    this.GetSetMoves(this.color);
+    this.isAiMove = true;
+    this.HandleAiMove();
+  }
+
+  HandleAiMove() {
+    let move = this.Agent.GetBestMove(
+      this.aiDepth,
+      this.color,
+      this.currentMoves
+    );
+    this.MakeMove(move[0]);
+    // console.log(move[1]);
+    this.GetSetMoves(this.color);
+    this.isAiMove = false;
+  }
+
+  HandleCheckMate(string: String) {}
+
+  HandleStaleMate(string: String) {}
+
+  IsCheck(color: Color): boolean {
+    return CheckChecker.CheckCheck(
+      this.board.board,
+      CheckChecker.FindKing(this.board.board, color)
+    );
   }
 
   MakeMove(move: Move) {
     this.moveExecuter.MakeMove(move);
+    if (move.piece.color == Color.White) {
+      this.moveLog.push([move, null]);
+    } else {
+      this.moveLog[this.moveLog.length - 1][1] = move;
+    }
+
     this.color = this.color == Color.White ? Color.Black : Color.White;
-    this.GetSetMoves(this.color);
+  }
+
+  UnMakeMove(move: Move) {
+    this.moveExecuter.UnMakeMove(move);
+    if (move.piece.color == Color.White) {
+      this.moveLog.pop();
+    } else {
+      this.moveLog[this.moveLog.length - 1][1] = null;
+    }
+
+    this.color = this.color == Color.White ? Color.Black : Color.White;
   }
 
   GetSetMoves(color: Color) {
     const filteredMoves = this.GetMoves(color);
     this.SetMoves(filteredMoves);
-    // console.log(this.currentMoves)
   }
 
   GetMoves(color: Color): Move[] {
     let unfilteredMoves = this.board.GetMoves(color);
-    let filteredMoves = this.moveFilter.FilterMoves(unfilteredMoves, color);
+    let filteredMoves = this.moveFilter.FilterMoves(
+      unfilteredMoves,
+      color,
+      this.HandleCheckMate.bind(this),
+      this.HandleStaleMate.bind(this),
+      this.IsCheck.bind(this)
+    );
     return filteredMoves;
   }
 
@@ -46,6 +157,7 @@ export class Game {
   }
 
   OpenModal(callback: (move: Move) => void, move: Move) {
+    this.promotionalModal.classList.add("show");
     this.promotionalModal.style.display = "block";
 
     const buttons = this.promotionalModal.querySelectorAll("button");
@@ -68,6 +180,7 @@ export class Game {
             type = Type.Queen;
         }
 
+        this.promotionalModal.classList.add("show");
         this.promotionalModal.style.display = "none";
         move.promotionType = type;
         callback(move);
@@ -75,19 +188,26 @@ export class Game {
     });
   }
 
-  SetUpBoard(boardEl: HTMLDivElement, promotionModal: HTMLDivElement) {
-    this.promotionalModal = promotionModal;
+  SetUpBoard() {
+    this.boardElement.classList.remove("rotated");
+    this.boardElement.innerHTML = "";
+    this.moveLog = [];
     this.color = Color.White;
+
     this.moveHandler = new MoveHandler(
       this.color,
-      this.MakeMove.bind(this),
+      this.HandlePlayerMove.bind(this),
       this.OpenModal.bind(this)
     );
+
     this.board = new Board(
-      boardEl,
-      this.moveHandler.HandleClick.bind(this.moveHandler)
+      this.boardElement,
+      this.moveHandler.HandleClick.bind(this.moveHandler),
+      this.moveLog
     );
+
     this.moveHandler.SetBoard(this.board.board);
+
     this.moveExecuter = new MoveExecuter(this.board.board, false);
     this.moveFilter = new MoveFilter(
       this.board.board,
@@ -96,6 +216,13 @@ export class Game {
       this.moveExecuter.MakeMove.bind(this.moveExecuter),
       this.moveExecuter.UnMakeMove.bind(this.moveExecuter),
       CheckChecker.CheckCheck
+    );
+    this.Agent = new Agent(
+      this.board.board,
+      this.MakeMove.bind(this),
+      this.UnMakeMove.bind(this),
+      this.GetMoves.bind(this),
+      this.IsCheck.bind(this)
     );
 
     this.GetSetMoves(this.color);

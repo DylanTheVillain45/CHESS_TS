@@ -1,6 +1,7 @@
 import { Piece } from "../Classes/piece";
 import { Tile } from "../Classes/tile";
 import { MoveMap } from "../data/MoveMap";
+import { DebugHelp } from "../Debug/DebugHelp";
 import { Color } from "../enums/colorEnum";
 import { Type } from "../enums/pieceEnum";
 
@@ -13,6 +14,20 @@ export class CheckChecker {
       CheckChecker.IsPawnCheck(board, kingPiece, opponentColor) ||
       CheckChecker.IsPieceCheck(board, kingPiece, opponentColor)
     );
+  }
+
+  public static FindKing(board: Tile[][], color: Color): Piece {
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        const piece = board[i][j].piece
+        if (piece && piece.type == Type.King && piece.color == color) {
+          return piece;
+        }
+      }
+    }
+    DebugHelp.ConsoleBoard(board)
+    throw new Error("Cant find king");
+
   }
 
   public static IsPieceCheck(

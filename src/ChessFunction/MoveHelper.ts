@@ -8,7 +8,11 @@ import { Type } from "../enums/pieceEnum";
 import { CheckChecker } from "./CheckChecker";
 
 export class MoveHelper {
-  static GetPawnMoves(board: Board, piece: Piece): Move[] {
+  static GetPawnMoves(
+    board: Board,
+    piece: Piece,
+    moveLog: [Move, Move | null][]
+  ): Move[] {
     const moves: Move[] = [];
     const dx = [-1, 1];
     const x = piece.x;
@@ -82,12 +86,27 @@ export class MoveHelper {
         EnPassantTile.piece.type == Type.Pawn &&
         y == enPassantRow
       ) {
-        moves.push(
-          new Move(piece, piece.y, piece.x, y + dy, x + dx, {
-            capturedPiece: EnPassantTile.piece,
-            isEnpassant: true,
-          })
-        );
+        const lastMove = moveLog[moveLog.length - 1];
+
+        if (lastMove) {
+          const enemyMove =
+            piece.color === Color.White ? lastMove[1] : lastMove[0];
+          if (
+            enemyMove &&
+            enemyMove.piece.type === Type.Pawn &&
+            enemyMove.piece === EnPassantTile.piece &&
+            Math.abs(enemyMove.startY - enemyMove.endY) === 2 &&
+            enemyMove.endX === x + dx &&
+            enemyMove.endY === y
+          ) {
+            moves.push(
+              new Move(piece, piece.y, piece.x, y + dy, x + dx, {
+                capturedPiece: EnPassantTile.piece,
+                isEnpassant: true,
+              })
+            );
+          }
+        }
       }
     });
 
@@ -126,13 +145,21 @@ export class MoveHelper {
     return moves;
   }
 
-  static GetCastleMoves(board: Board, king: Piece): Move[] {
+  static GetCastleMoves(
+    board: Board,
+    king: Piece,
+    moveLog: [Move, Move | null][]
+  ): Move[] {
     const moves: Move[] = [];
 
     const startRow = king.color == Color.White ? 0 : 7;
     const startCol = 4;
 
     if (king.x != startCol || king.y != startRow) return [];
+
+    const hasKingMoved = this.HasMoved(king, moveLog);
+
+    if (hasKingMoved) return [];
 
     const RookShortTile: Tile = board.board[king.y][7];
     const RookShort: Piece | undefined = RookShortTile.piece;
@@ -141,16 +168,19 @@ export class MoveHelper {
       RookShort.type == Type.Rook &&
       RookShort.color == king.color
     ) {
-      if (
-        board.board[king.y][5].piece == null &&
-        board.board[king.y][6].piece == null
-      ) {
-        if (this.IsSafeForKing(board, king, 5)) {
-          let move: Move = new Move(king, king.y, king.x, king.y, 6, {
-            isCastle: true,
-            isShortCastle: true,
-          });
-          moves.push(move);
+      const hasRookShortMoved = this.HasMoved(RookShort, moveLog);
+      if (!hasRookShortMoved) {
+        if (
+          board.board[king.y][5].piece == null &&
+          board.board[king.y][6].piece == null
+        ) {
+          if (this.IsSafeForKing(board, king, 5)) {
+            let move: Move = new Move(king, king.y, king.x, king.y, 6, {
+              isCastle: true,
+              isShortCastle: true,
+            });
+            moves.push(move);
+          }
         }
       }
     }
@@ -162,17 +192,20 @@ export class MoveHelper {
       RookLong.type == Type.Rook &&
       RookLong.color == king.color
     ) {
-      if (
-        board.board[king.y][3].piece == null &&
-        board.board[king.y][2].piece == null &&
-        board.board[king.y][1].piece == null
-      ) {
-        if (this.IsSafeForKing(board, king, 3)) {
-          let move: Move = new Move(king, king.y, king.x, king.y, 2, {
-            isCastle: true,
-            isShortCastle: false,
-          });
-          moves.push(move);
+      const hasRookLongMoved = this.HasMoved(RookLong, moveLog);
+      if (!hasRookLongMoved) {
+        if (
+          board.board[king.y][3].piece == null &&
+          board.board[king.y][2].piece == null &&
+          board.board[king.y][1].piece == null
+        ) {
+          if (this.IsSafeForKing(board, king, 3)) {
+            let move: Move = new Move(king, king.y, king.x, king.y, 2, {
+              isCastle: true,
+              isShortCastle: false,
+            });
+            moves.push(move);
+          }
         }
       }
     }
@@ -180,12 +213,20 @@ export class MoveHelper {
     return moves;
   }
 
+  static HasMoved(piece: Piece, moveLog: [Move, Move | null][]): boolean {
+    return moveLog.some(
+      ([whiteMove, blackMove]) =>
+        (whiteMove && whiteMove.piece == piece) ||
+        (blackMove && blackMove.piece == piece)
+    );
+  }
+
   static IsSafeForKing(board: Board, king: Piece, x: number): boolean {
     const startTile = board.board[king.y][king.x];
-    startTile.RemovePiece()
+    startTile.RemovePiece();
 
     const middleTile = board.board[king.y][x];
-    middleTile.AddPiece(king)
+    middleTile.AddPiece(king);
 
     let startX = king.x;
     king.Move(middleTile, king.y, x);

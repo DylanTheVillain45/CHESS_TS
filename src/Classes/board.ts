@@ -10,10 +10,12 @@ export class Board {
   board: Tile[][];
   whiteKing!: Piece;
   blackKing!: Piece;
+  moveLog: [Move, Move | null][];
 
-  constructor(boardEl: HTMLDivElement, private HandleClick: (tile: Tile) => void) {
+  constructor(boardEl: HTMLDivElement, private HandleClick: (tile: Tile) => void, moveLog: [Move, Move | null][]) {
     this.board = this.CreateBoard(boardEl);
     this.HandleClick = HandleClick;
+    this.moveLog = moveLog;
   }
 
   CreateBoard(boardEl: HTMLDivElement): Tile[][] {
@@ -71,12 +73,12 @@ export class Board {
     let moves: Move[];
 
     if (piece.type == Type.Pawn) {
-      moves = MoveHelper.GetPawnMoves(this, piece);
+      moves = MoveHelper.GetPawnMoves(this, piece, this.moveLog);
     } else {
       moves = MoveHelper.GetNonPawnMoves(this, piece);
 
       if (piece.type == Type.King) {
-        let castleMoves: Move[] = MoveHelper.GetCastleMoves(this, piece);
+        let castleMoves: Move[] = MoveHelper.GetCastleMoves(this, piece, this.moveLog);
 
         moves = [...moves, ...castleMoves]
       }
