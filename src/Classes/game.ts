@@ -1,16 +1,12 @@
 import { Color } from "../enums/colorEnum";
 import { Type } from "../enums/pieceEnum";
-import { Piece } from "./piece";
-import { Tile } from "./tile";
 import { Board } from "./board";
 import { Move } from "./move";
 import { MoveHandler } from "../ChessFunction/MoveHandler";
 import { MoveExecuter } from "../ChessFunction/MoveExecuter";
 import { MoveFilter } from "../ChessFunction/MoveFilter";
 import { CheckChecker } from "../ChessFunction/CheckChecker";
-import { Evaluation } from "../AiFunction/Evaluation";
 import { Agent } from "../AiFunction/Agent";
-import { DebugHelp } from "../Debug/DebugHelp";
 
 export class Game {
   board!: Board;
@@ -27,6 +23,7 @@ export class Game {
   undoMove: HTMLElement;
   reverseBoard: HTMLElement;
   depthSelector: HTMLSelectElement;
+  outcomeText: HTMLDivElement
 
   Agent!: Agent;
   isAiMove: boolean = false;
@@ -38,7 +35,8 @@ export class Game {
     restartButton: HTMLElement,
     undoMove: HTMLElement,
     reverseBoard: HTMLElement,
-    depthSelector: HTMLSelectElement
+    depthSelector: HTMLSelectElement,
+    outcomeText: HTMLDivElement
   ) {
     this.boardElement = boardElement;
     this.promotionalModal = promotionModal;
@@ -46,6 +44,7 @@ export class Game {
     this.undoMove = undoMove;
     this.reverseBoard = reverseBoard;
     this.depthSelector = depthSelector;
+    this.outcomeText = outcomeText
     this.SetUpBoard();
     this.SetUpButtons();
   }
@@ -101,9 +100,11 @@ export class Game {
     this.isAiMove = false;
   }
 
-  HandleCheckMate(string: String) {}
+  HandleCheckMate() {
+    this.outcomeText.textContent = `CHECKMATE - ${(this.color == Color.White ? Color.Black : Color.White).toUpperCase()} WINS`;}
 
-  HandleStaleMate(string: String) {}
+  HandleStaleMate() {
+    this.outcomeText.textContent = "STALEMATE - DRAW";}
 
   IsCheck(color: Color): boolean {
     return CheckChecker.CheckCheck(
@@ -189,6 +190,7 @@ export class Game {
   }
 
   SetUpBoard() {
+    this.outcomeText.textContent = ""
     this.boardElement.classList.remove("rotated");
     this.boardElement.innerHTML = "";
     this.moveLog = [];

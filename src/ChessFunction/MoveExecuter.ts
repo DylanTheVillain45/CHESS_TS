@@ -1,5 +1,4 @@
 import { Move } from "../Classes/move";
-import { Piece } from "../Classes/piece";
 import { Tile } from "../Classes/tile";
 import { DebugHelp } from "../Debug/DebugHelp";
 import { Type } from "../enums/pieceEnum";

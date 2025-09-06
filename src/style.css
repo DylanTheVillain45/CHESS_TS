@@ -23,6 +23,13 @@
   }
 }
 
+#outcome {
+  text-align: center;
+  font-size: larger;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
 #board {
   width: calc(var(--tile-size) * 8);
   height: calc(var(--tile-size) * 8);
@@ -50,7 +57,7 @@
 
 h1 {
   text-align: center;
-  margin: 50px 0 50px 0;
+  margin: 35px 0 35px 0;
 }
 
 .current {
@@ -59,10 +66,6 @@ h1 {
 
 .highlighted {
   background-color: red;
-}
-
-#board {
-  /* transition: transform 0.3s ease; */
 }
 
 #board.rotated {

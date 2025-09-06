@@ -4,7 +4,6 @@ import { Color } from "../enums/colorEnum";
 import { Piece } from "./piece";
 import { Move } from "./move";
 import { MoveHelper } from "../ChessFunction/MoveHelper";
-import { DebugHelp } from "../Debug/DebugHelp";
 
 export class Board {
   board: Tile[][];
@@ -56,8 +55,8 @@ export class Board {
   GetMoves(color: Color): Move[] {
     let moves: Move[] = [];
 
-    this.board.forEach((row: Tile[], rowIndex: number) => {
-      row.forEach((tile: Tile, colIndex: number) => {
+    this.board.forEach((row: Tile[]) => {
+      row.forEach((tile: Tile) => {
         if (tile.piece != null && tile.piece.color == color) {
           const pieceMoves: Move[] = this.GetPieceMoves(tile.piece);
 

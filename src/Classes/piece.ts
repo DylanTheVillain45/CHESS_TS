@@ -1,6 +1,5 @@
 import { Color } from "../enums/colorEnum";
 import { Type } from "../enums/pieceEnum";
-import { Move } from "./move";
 import type { Tile } from "./tile";
 
 export class Piece {

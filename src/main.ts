@@ -42,18 +42,21 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
       <button data-piece="bishop">Bishop</button>
       <button data-piece="knight">Knight</button>
     </div>
+
+    <div id="outcome"></div>
   </div>
 `;
 
 const boardEl: HTMLElement | null = document.getElementById("board");
 const promotionSelector: HTMLElement | null =
-  document.getElementById("promotionModal");
+document.getElementById("promotionModal");
 const depthSelector: HTMLElement | null =
-  document.getElementById("depthSelect");
+document.getElementById("depthSelect");
 const undoMove: HTMLElement | null = document.getElementById("undoMove");
 const reverseBoard: HTMLElement | null =
-  document.getElementById("reverseBoardBtn");
+document.getElementById("reverseBoardBtn");
 const restartButton: HTMLElement | null = document.getElementById("restartBtn")
+const outcomeText: HTMLElement | null = document.getElementById("outcome")
 
 if (
   boardEl &&
@@ -67,7 +70,9 @@ if (
   reverseBoard &&
   reverseBoard instanceof HTMLElement &&
   restartButton &&
-  restartButton instanceof HTMLElement
+  restartButton instanceof HTMLElement &&
+  outcomeText &&
+  outcomeText instanceof HTMLDivElement
 ) {
   const game = new Game(
     boardEl,
@@ -76,5 +81,10 @@ if (
     undoMove,
     reverseBoard,
     depthSelector,
+    outcomeText
   );
+
+  game
 }
+
+

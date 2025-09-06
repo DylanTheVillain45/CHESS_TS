@@ -1,7 +1,6 @@
 import { Move } from "../Classes/move";
 import { Tile } from "../Classes/tile";
 import { Color } from "../enums/colorEnum";
-import { Type } from "../enums/pieceEnum";
 
 export class MoveHandler {
   currentTile: Tile | null;
