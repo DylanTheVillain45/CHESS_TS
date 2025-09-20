@@ -52,6 +52,8 @@ export class Game {
   SetUpButtons() {
     this.restartButton.onclick = () => this.SetUpBoard();
     this.undoMove.onclick = () => {
+      this.outcomeText.textContent = ""
+      this.UnMakeMove(this.GetLastMove());
       this.UnMakeMove(this.GetLastMove());
       this.GetSetMoves(this.color);
     };
@@ -140,14 +142,15 @@ export class Game {
     this.SetMoves(filteredMoves);
   }
 
-  GetMoves(color: Color): Move[] {
+  GetMoves(color: Color, IsAi: boolean = false): Move[] {
     let unfilteredMoves = this.board.GetMoves(color);
     let filteredMoves = this.moveFilter.FilterMoves(
       unfilteredMoves,
       color,
       this.HandleCheckMate.bind(this),
       this.HandleStaleMate.bind(this),
-      this.IsCheck.bind(this)
+      this.IsCheck.bind(this),
+      IsAi,
     );
     return filteredMoves;
   }

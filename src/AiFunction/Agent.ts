@@ -12,7 +12,7 @@ export class Agent {
     board: Tile[][],
     private MakeMove: (move: Move) => void,
     private UnMakeMove: (move: Move) => void,
-    private GetMoves: (color: Color) => Move[],
+    private GetMoves: (color: Color, isAiMove: boolean) => Move[],
     private IsCheck: (color: Color) => boolean
   ) {
     this.board = board;
@@ -31,7 +31,7 @@ export class Agent {
   }
 
   GetSortedMoveList(color: Color): Move[] {
-    return this.SortMoveList(this.GetMoves(color));
+    return this.SortMoveList(this.GetMoves(color, true));
   }
 
   GetBestMove(

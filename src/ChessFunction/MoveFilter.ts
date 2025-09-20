@@ -12,6 +12,7 @@ export class MoveFilter {
     board: Tile[][],
     whiteKing: Piece,
     blackKing: Piece,
+
     private makeMove: (move: Move) => void,
     private unMakeMove: (move: Move) => void,
     private checkCheck: (tile: Tile[][], kingPiece: Piece) => boolean
@@ -29,7 +30,8 @@ export class MoveFilter {
     color: Color,
     handleCheckMate: (string: string) => void,
     handleStalemate: (string: string) => void,
-    checkCheck: (color: Color) => boolean
+    checkCheck: (color: Color) => boolean,
+    isAi: boolean
   ) {
     const myKing: Piece =
       color == Color.White ? this.whiteKing : this.blackKing;
@@ -58,7 +60,7 @@ export class MoveFilter {
       this.unMakeMove(move);
     }
 
-    if (newMoves.length == 0) {
+    if (newMoves.length == 0 && !isAi) {
       if (checkCheck(color)) {
         handleCheckMate("CheckMate");
       } else {
